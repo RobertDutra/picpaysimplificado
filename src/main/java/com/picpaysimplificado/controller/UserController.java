@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -21,13 +20,13 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User save(@RequestBody UserDTO user) {
-        return service.save(user);
+        return service.create(user);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public Optional<User> findByid(@PathVariable Long id) throws EntityNotFoundException {
-        return service.findById(id);
+    public User findByid(@PathVariable Long id) throws EntityNotFoundException {
+        return service.findUserById(id);
     }
 
     @ResponseStatus(HttpStatus.OK)

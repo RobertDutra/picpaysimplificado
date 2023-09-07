@@ -1,6 +1,7 @@
 package com.picpaysimplificado.service;
 
 import com.picpaysimplificado.domain.user.User;
+import com.picpaysimplificado.domain.user.UserType;
 import com.picpaysimplificado.dto.UserDTO;
 import com.picpaysimplificado.exceptions.EntityNotFoundException;
 import com.picpaysimplificado.interfaces.UserInterface;
@@ -8,8 +9,8 @@ import com.picpaysimplificado.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 
 @org.springframework.stereotype.Service
@@ -19,15 +20,28 @@ public class UserService implements UserInterface {
     UserRepository repository;
 
     @Override
-    public User save(UserDTO userDTO) {
-        User user = new User(userDTO);
-        return repository.save(user);
+    public void validateTransaction(User payer, BigDecimal amount) throws EntityNotFoundException {
+
+        if (payer.getUserType() == UserType.LOJISTA) {
+            throw  new EntityNotFoundException("Lojista " + payer.getNome() + " não esta autorizado a fazer transação");
+        }
+
+        if (payer.getSaldo().compareTo(amount) < 0) {
+            throw  new EntityNotFoundException("Saldo da conta com id " + payer.getId() + " insufiente!");
+        }
     }
 
     @Override
-    public Optional<User> findById(Long id) throws EntityNotFoundException {
-        Optional<User> user = repository.findById(id);
-        if (user.isPresent()) {
+    public User create(UserDTO userDTO) {
+        User user = new User(userDTO);
+        return this.repository.save(user);
+    }
+
+    @Override
+    public User findUserById(Long id) throws EntityNotFoundException {
+
+        User user = this.repository.findUserById(id);
+        if (user != null) {
             return user;
         }
         else {
@@ -37,21 +51,28 @@ public class UserService implements UserInterface {
 
     @Override
     public List<User> findAll() {
-        return repository.findAll();
+        return this.repository.findAll();
     }
 
     @Override
     public UserDTO update(Long id , UserDTO userDto) throws EntityNotFoundException {
-        Optional<User> userOptional = findById(id);
+        User userOptional = findUserById(id);
         User user = new User(userDto);
-        BeanUtils.copyProperties(user, userOptional.get(), "id");
-        repository.save(userOptional.get());
+        BeanUtils.copyProperties(user, userOptional, "id");
+        save(userOptional);
         return userDto;
     }
 
     @Override
     public void delete(Long id) throws EntityNotFoundException {
-        findById(id);
-        repository.deleteById(id);
+        findUserById(id);
+        this.repository.deleteById(id);
     }
+
+    @Override
+    public void save(User user){
+        this.repository.save(user);
+    }
+
+
 }
