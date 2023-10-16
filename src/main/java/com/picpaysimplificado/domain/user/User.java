@@ -2,6 +2,7 @@ package com.picpaysimplificado.domain.user;
 
 import com.picpaysimplificado.dto.UserDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,14 +25,18 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String nome;
 
+    @NotBlank
     @Column(unique = true)
     private String cpf;
 
+    @NotBlank
     @Column(unique = true)
     private String email;
 
+    @NotBlank
     private String senha;
 
     private BigDecimal saldo;
@@ -59,5 +64,14 @@ public class User implements Serializable {
         this.senha = userDto.senha();
         this.saldo = userDto.saldo();
         this.userType = userDto.userType();
+    }
+
+    public User (String nome, String cpf, String email, String senha, BigDecimal saldo, UserType userType){
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+        this.senha = senha;
+        this.saldo = saldo;
+        this.userType = userType;
     }
 }

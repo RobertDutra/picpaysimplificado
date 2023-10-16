@@ -2,6 +2,7 @@ package com.picpaysimplificado.error;
 
 import com.picpaysimplificado.dto.DefaultErrorDTO;
 import com.picpaysimplificado.exceptions.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,13 @@ public class ApiExceptionError extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> dataIntegrityViolationException(DataIntegrityViolationException e, WebRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         DefaultErrorDTO body = DefaultErrorDTO.builder().timestamp(LocalDateTime.now()).status(status).message("Usuário já cadastrado!").build();
+        return handleExceptionInternal(e, body, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> ConstraintViolationException(ConstraintViolationException e, WebRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+            DefaultErrorDTO body = DefaultErrorDTO.builder().timestamp(LocalDateTime.now()).status(status).message("Dados vazios ou não preenchidos!").build();
         return handleExceptionInternal(e, body, new HttpHeaders(), status, request);
     }
 }
