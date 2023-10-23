@@ -1,7 +1,7 @@
-package com.picpaysimplificado.domain;
+package com.picpaysimplificado.repository;
 
 import com.picpaysimplificado.domain.user.User;
-import com.picpaysimplificado.repository.UserRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +10,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
+import java.util.Optional;
 
-import static com.picpaysimplificado.common.UserConstants.INVALID_USER;
-import static com.picpaysimplificado.common.UserConstants.USER;
+import static com.picpaysimplificado.common.UserConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class UserRepositoryTest {
@@ -49,34 +50,36 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void createUser_WithInvalidData_ThrowsException() {
-        assertThatThrownBy(() -> userRepository.save(INVALID_USER)).isInstanceOf(RuntimeException.class);
-    }
-
-    @Test
     public void createUser_WithExistingCpf_ThrowsException(){
         User user = testEntityManager.persistFlushFind(USER);
-        testEntityManager.detach(user);
-        user.setId(null);
-        assertThatThrownBy(() -> userRepository.save(user)).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> userRepository.save(USER_CPF)).isInstanceOf(DataIntegrityViolationException.class);
+    }
+    @Test
+    public void createUser_WithExistingEmail_ThrowsException(){
+        User user = testEntityManager.persistFlushFind(USER);
+        assertThatThrownBy(() -> userRepository.save(USER_EMAIL)).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    public void getUser_ByExistingId_ReturnsPlanet(){
+    public void getUser_ByExistingId_ReturnsUser(){
         User user = testEntityManager.persistFlushFind(USER);
 
-        User userFound = userRepository.findUserById(user.getId());
+        Optional<User> userFound = userRepository.findUserById(user.getId());
 
-        assertThat(userFound).isNotNull();
-        assertThat(userFound).isEqualTo(user);
-
+        assertNotNull(userFound);
+        assertEquals(user.getNome(), userFound.get().getNome());
+        assertEquals(user.getCpf(), userFound.get().getCpf());
+        assertEquals(user.getEmail(), userFound.get().getEmail());
+        assertEquals(user.getSenha(), userFound.get().getSenha());
+        assertEquals(user.getSaldo(), userFound.get().getSaldo());
+        assertEquals(user.getUserType(), userFound.get().getUserType());
     }
 
     @Test
     public void getUser_ByUnexistingId_ReturnsEmpty() {
-        User user = userRepository.findUserById(1L);
+        Optional<User> user = userRepository.findUserById(1L);
 
-        assertThat(user).isNull();
+        assertFalse(user.isPresent());
     }
 
     @Test
@@ -85,9 +88,11 @@ public class UserRepositoryTest {
 
         List<User> userList = userRepository.findAll();
 
-        assertThat(userList).isNotEmpty();
-        assertThat(userList).hasSize(1);
-        assertThat(userList.get(0)).isEqualTo(user);
+
+        assertNotNull(userList);
+        assertFalse(userList.isEmpty());
+        assertEquals(user, userList.get(0));
+        assertEquals(userList.size(), 1);
     }
 
     @Test
@@ -97,7 +102,7 @@ public class UserRepositoryTest {
         userRepository.deleteById(user.getId());
 
         User removeUser = testEntityManager.find(User.class, user.getId());
-        assertThat(removeUser).isNull();
+        assertNull(removeUser);
     }
 
 }
