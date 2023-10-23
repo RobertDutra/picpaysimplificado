@@ -40,13 +40,9 @@ public class UserService implements UserInterface {
     @Override
     public User findUserById(Long id) throws EntityNotFoundException {
 
-        User user = this.repository.findUserById(id);
-        if (user != null) {
-            return user;
-        }
-        else {
-            throw  new EntityNotFoundException ("Usuário com id " + id + " não encontrado!");
-        }
+        return this.repository.findUserById(id).orElseThrow(() -> new EntityNotFoundException ("Usuário com id " + id + " não encontrado!"));
+
+
     }
 
     @Override
@@ -56,10 +52,10 @@ public class UserService implements UserInterface {
 
     @Override
     public UserDTO update(Long id , UserDTO userDto) throws EntityNotFoundException {
-        User userOptional = findUserById(id);
+        User userById = findUserById(id);
         User user = new User(userDto);
-        BeanUtils.copyProperties(user, userOptional, "id");
-        save(userOptional);
+        BeanUtils.copyProperties(user, userById, "id");
+        save(userById);
         return userDto;
     }
 
