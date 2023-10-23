@@ -3,10 +3,7 @@ package com.picpaysimplificado.domain.user;
 import com.picpaysimplificado.dto.UserDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
@@ -15,30 +12,29 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity(name = "users")
 @Table(name = "users")
+@Builder(toBuilder = true)
 public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @Column(nullable = false)
     private String nome;
 
-    @NotBlank
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String cpf;
 
-    @NotBlank
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank
+    @Column(nullable = false)
     private String senha;
 
+    @Column(nullable = false)
     private BigDecimal saldo;
 
     @Enumerated(EnumType.STRING)
@@ -65,7 +61,6 @@ public class User implements Serializable {
         this.saldo = userDto.saldo();
         this.userType = userDto.userType();
     }
-
     public User (String nome, String cpf, String email, String senha, BigDecimal saldo, UserType userType){
         this.nome = nome;
         this.cpf = cpf;

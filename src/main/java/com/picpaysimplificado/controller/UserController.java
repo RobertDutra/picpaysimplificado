@@ -4,6 +4,7 @@ import com.picpaysimplificado.domain.user.User;
 import com.picpaysimplificado.dto.UserDTO;
 import com.picpaysimplificado.exceptions.EntityNotFoundException;
 import com.picpaysimplificado.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User save(@RequestBody UserDTO user) {
+    public User save(@RequestBody @Valid UserDTO user) {
         return service.create(user);
     }
 
@@ -31,7 +32,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public UserDTO update(@PathVariable Long id, @RequestBody UserDTO user) throws EntityNotFoundException {
+    public UserDTO update(@PathVariable Long id, @RequestBody @Valid UserDTO user) throws EntityNotFoundException {
         return service.update(id, user);
     }
 
@@ -41,7 +42,7 @@ public class UserController {
         return service.findAll();
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) throws EntityNotFoundException {
         service.delete(id);
