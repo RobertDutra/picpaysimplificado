@@ -31,7 +31,7 @@ public class TransactionService implements TransactionInterface {
     NotificationService notificationService;
 
     @Autowired
-    RestTemplate restTemplate;
+    AuthorizeTransactionService authorizeTransactionService;
 
     @Override
     public Transaction create(TransactionDTO transaction) throws EntityNotFoundException {
@@ -40,7 +40,7 @@ public class TransactionService implements TransactionInterface {
 
         userService.validateTransaction(payer, transaction.amount());
 
-        boolean isAuthorized = this.authorizeTransaction(payer, transaction.amount());
+        boolean isAuthorized = authorizeTransactionService.authorizeTransaction(payer, transaction.amount());
         if (!isAuthorized) {
             throw new EntityNotFoundException("Transação não autorizada!");
         }
@@ -66,14 +66,7 @@ public class TransactionService implements TransactionInterface {
 
     @Override
     public Transaction findById(Long id) throws EntityNotFoundException {
-        Optional<Transaction> transaction = this.transactionRepository.findById(id);
-
-        if (transaction.isPresent()) {
-            return transaction.get();
-        }
-        else {
-            throw new EntityNotFoundException("Transação com id " + id + " não encontrada!");
-        }
+        return this.transactionRepository.findTransactionById(id).orElseThrow(() -> new EntityNotFoundException("Transação com id " + id + " não encontrada!"));
     }
 
     @Override
@@ -81,17 +74,4 @@ public class TransactionService implements TransactionInterface {
         return this.transactionRepository.findAll();
     }
 
-    @Override
-    public boolean authorizeTransaction(User payer, BigDecimal value) {
-
-        ResponseEntity<Map> authorizationTransaction = restTemplate.getForEntity("https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6", Map.class);
-
-        if (authorizationTransaction.getStatusCode() == HttpStatus.OK){
-            String message = (String) authorizationTransaction.getBody().get("message");
-            return "Autorizado".equalsIgnoreCase(message);
-        }
-        else {
-            return false;
-        }
-    }
 }

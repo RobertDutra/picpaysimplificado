@@ -87,7 +87,6 @@ public class UserServiceTest {
 
         assertNotNull(user);
         assertEquals(USER, user );
-        assertThat(user).isEqualTo(USER);
 
         verify(userRepository, times(1)).findUserById(any());
     }
@@ -103,14 +102,16 @@ public class UserServiceTest {
 
     @Test
     public void getAllUsers_ReturnsAllUsers(){
-        when(userRepository.findAll()).thenReturn(List.of(USER));
+        when(userRepository.findAll()).thenReturn(USER_LIST);
 
         List<User> users = userService.findAll();
 
         assertNotNull(users);
         assertFalse(users.isEmpty());
-        assertEquals(users.size(), 1);
-        assertEquals(USER, users.get(0));
+        assertEquals(3, users.size());
+        assertEquals(RICARDO.getNome(), users.get(0).getNome());
+        assertEquals(LUCAS.getNome(), users.get(1).getNome());
+        assertEquals(ASTOR.getNome(), users.get(2).getNome());
 
         verify(userRepository, times(1)).findAll();
     }

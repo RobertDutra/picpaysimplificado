@@ -29,11 +29,11 @@ public class ApiExceptionError extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> dataIntegrityViolationException(DataIntegrityViolationException e, WebRequest request) {
-        if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-            HttpStatus status = HttpStatus.CONFLICT;
-            DefaultErrorDTO body = DefaultErrorDTO.builder().timestamp(LocalDateTime.now()).status(status).message("Dados vazios ou não preenchidos ao salvar no banco!").build();
-            return handleExceptionInternal(e, body, new HttpHeaders(), status, request);
-        }
+//        if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+//            HttpStatus status = HttpStatus.CONFLICT;
+//            DefaultErrorDTO body = DefaultErrorDTO.builder().timestamp(LocalDateTime.now()).status(status).message("Dados vazios ou não preenchidos ao salvar no banco!").build();
+//            return handleExceptionInternal(e, body, new HttpHeaders(), status, request);
+//        }
 
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
         DefaultErrorDTO body = DefaultErrorDTO.builder().timestamp(LocalDateTime.now()).status(status).message("Usuário já cadastrado!").build();

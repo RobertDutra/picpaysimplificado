@@ -23,11 +23,11 @@ public class UserService implements UserInterface {
     public void validateTransaction(User payer, BigDecimal amount) throws EntityNotFoundException {
 
         if (payer.getUserType() == UserType.LOJISTA) {
-            throw  new EntityNotFoundException("Lojista " + payer.getNome() + " não esta autorizado a fazer transação");
+            throw  new EntityNotFoundException("Lojista " + payer.getNome() + " não esta autorizado a fazer transação!");
         }
 
         if (payer.getSaldo().compareTo(amount) < 0) {
-            throw  new EntityNotFoundException("Saldo da conta com id " + payer.getId() + " insufiente!");
+            throw  new EntityNotFoundException("Saldo do usuário " + payer.getNome()+ " insufiente!");
         }
     }
 
@@ -39,10 +39,7 @@ public class UserService implements UserInterface {
 
     @Override
     public User findUserById(Long id) throws EntityNotFoundException {
-
         return this.repository.findUserById(id).orElseThrow(() -> new EntityNotFoundException ("Usuário com id " + id + " não encontrado!"));
-
-
     }
 
     @Override

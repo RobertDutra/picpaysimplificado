@@ -2,8 +2,10 @@ package com.picpaysimplificado.domain.user;
 
 import com.picpaysimplificado.dto.UserDTO;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
