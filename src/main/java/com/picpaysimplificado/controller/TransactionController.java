@@ -5,6 +5,7 @@ import com.picpaysimplificado.dto.TransactionDTO;
 import com.picpaysimplificado.exceptions.EntityNotFoundException;
 import com.picpaysimplificado.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,8 @@ public class TransactionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Serviço para cadastrar transações feita.")
-    public Transaction create(@RequestBody TransactionDTO transactionDTO) throws EntityNotFoundException {
+    @Operation(summary = "Serviço para cadastrar transações feitas.")
+    public Transaction create(@RequestBody @Valid TransactionDTO transactionDTO) throws EntityNotFoundException {
         return service.create(transactionDTO);
     }
 
